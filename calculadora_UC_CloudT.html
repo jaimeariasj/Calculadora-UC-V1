@@ -1,0 +1,260 @@
+<!DOCTYPE html>
+<!-- saved from url=(0014)about:internet -->
+<html lang="es"><head><meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Calculadora UC — Cloud T</title>
+<style>
+@import url('https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;500&family=IBM+Plex+Sans:wght@300;400;500;600&display=swap');
+:root{--bg:#f5f4f0;--surface:#fff;--surface2:#f0efe9;--border:#dddcd6;--border2:#c8c7bf;--text:#1a1a18;--text2:#6b6b65;--text3:#9b9b94;--accent:#1a3a5c;--accent-light:#e8eef5;--accent-mid:#3d6b9e;--green:#2d6a4f;--green-light:#e8f5ee;--amber:#7c5200;--amber-light:#fff3dc;--red:#c0392b;--mono:'IBM Plex Mono',monospace;--sans:'IBM Plex Sans',sans-serif;--radius:6px;--radius-lg:10px;}
+*{box-sizing:border-box;margin:0;padding:0;}
+body{font-family:var(--sans);background:var(--bg);color:var(--text);font-size:14px;line-height:1.5;min-height:100vh;}
+header{background:var(--accent);color:#fff;padding:18px 32px;display:flex;align-items:baseline;gap:16px;}
+header h1{font-size:18px;font-weight:600;letter-spacing:-0.02em;}
+header span{font-size:12px;opacity:0.6;font-family:var(--mono);}
+.layout{display:grid;grid-template-columns:380px 1fr;min-height:calc(100vh - 58px);}
+.sidebar{background:var(--surface);border-right:1px solid var(--border);padding:20px 18px;overflow-y:auto;}
+.main{padding:24px 28px;overflow-y:auto;}
+.block{margin-bottom:20px;}
+.block-title{font-size:10px;font-weight:600;letter-spacing:0.08em;text-transform:uppercase;color:var(--text3);margin-bottom:10px;padding-bottom:6px;border-bottom:1px solid var(--border);}
+.field{display:flex;flex-direction:column;gap:4px;margin-bottom:8px;}
+.field label{font-size:11px;color:var(--text2);font-weight:500;}
+.field input,.field select{padding:7px 10px;border:1px solid var(--border);border-radius:var(--radius);background:var(--surface2);color:var(--text);font-family:var(--sans);font-size:13px;outline:none;transition:border-color 0.15s;}
+.field input:focus,.field select:focus{border-color:var(--accent-mid);}
+.field input.obj{border-color:var(--accent-mid);background:var(--accent-light);}
+.config-grid{display:grid;grid-template-columns:1fr 1fr;gap:8px;}
+.product-grid{display:grid;grid-template-columns:1fr 1fr;gap:6px;}
+.product-card{border:1px solid var(--border);border-radius:var(--radius);padding:9px 11px;cursor:pointer;transition:all 0.12s;background:var(--surface);}
+.product-card:hover{border-color:var(--border2);background:var(--surface2);}
+.product-card.selected{border-color:var(--accent-mid);background:var(--accent-light);}
+.prod-name{font-size:12px;font-weight:600;margin-bottom:2px;}
+.prod-tag{font-size:10px;color:var(--text3);line-height:1.3;}
+.prod-badges{display:flex;gap:4px;margin-top:4px;flex-wrap:wrap;}
+.badge{font-size:9px;font-weight:600;padding:1px 5px;border-radius:3px;letter-spacing:0.03em;}
+.badge-amber{background:var(--amber-light);color:var(--amber);}
+.badge-green{background:var(--green-light);color:var(--green);}
+.qty-block{padding:10px 0;border-bottom:1px solid var(--border);}
+.qty-block:last-child{border-bottom:none;}
+.qty-row{display:flex;align-items:center;gap:8px;}
+.qty-lbl{flex:1;font-size:12px;font-weight:500;}
+.qty-hint{font-size:10px;color:var(--accent-mid);font-family:var(--mono);margin-top:3px;line-height:1.4;}
+.qty-hint.verde{color:var(--green);}
+.qty-row input[type=number]{width:88px;padding:5px 8px;text-align:right;border:1px solid var(--border);border-radius:var(--radius);background:var(--surface2);color:var(--text);font-family:var(--mono);font-size:13px;outline:none;}
+.qty-row input:focus{border-color:var(--accent-mid);}
+.qty-row select{padding:5px 8px;border:1px solid var(--border);border-radius:var(--radius);background:var(--surface2);color:var(--text);font-family:var(--sans);font-size:12px;outline:none;}
+.sub-inputs{margin-top:8px;padding-left:12px;border-left:2px solid var(--border2);display:flex;flex-direction:column;gap:6px;}
+.sub-row{display:flex;align-items:center;gap:8px;}
+.sub-row label{font-size:11px;color:var(--text2);flex:1;}
+.sub-row input{width:88px;padding:4px 8px;text-align:right;border:1px solid var(--border);border-radius:var(--radius);background:var(--surface2);font-family:var(--mono);font-size:12px;color:var(--text);outline:none;}
+.sub-row select{padding:4px 8px;border:1px solid var(--border);border-radius:var(--radius);background:var(--surface2);font-family:var(--sans);font-size:12px;color:var(--text);outline:none;min-width:160px;}
+.metrics-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(130px,1fr));gap:10px;margin-bottom:20px;}
+.metric{background:var(--surface);border:1px solid var(--border);border-radius:var(--radius-lg);padding:12px 14px;}
+.metric.obj{border-color:var(--accent-mid);background:var(--accent-light);}
+.metric.usd{border-color:var(--green);background:var(--green-light);}
+.metric .mlabel{font-size:10px;color:var(--text3);font-weight:600;text-transform:uppercase;letter-spacing:0.05em;margin-bottom:4px;}
+.metric .mval{font-size:18px;font-weight:600;font-family:var(--mono);letter-spacing:-0.02em;}
+.metric.obj .mval{color:var(--accent);}
+.metric.usd .mval{color:var(--green);}
+table.fin{width:100%;border-collapse:collapse;font-size:12.5px;margin-bottom:16px;}
+table.fin th{text-align:left;padding:6px 10px;font-size:10px;font-weight:600;color:var(--text3);letter-spacing:0.05em;text-transform:uppercase;border-bottom:1px solid var(--border);background:var(--surface2);}
+table.fin th.obj{color:var(--accent);}
+table.fin th.usdh{color:var(--green);}
+table.fin td{padding:5px 10px;border-bottom:1px solid var(--border);}
+table.fin tr:last-child td{border-bottom:none;}
+table.fin .num{text-align:right;font-family:var(--mono);}
+table.fin .obj-col{text-align:right;font-family:var(--mono);color:var(--accent-mid);}
+table.fin .usd-col{text-align:right;font-family:var(--mono);color:var(--green);}
+/* Filas destacadas */
+table.fin .precio-row td{background:var(--accent-light);color:var(--accent);font-weight:700;font-size:13px;}
+table.fin .costos-row td{color:var(--red);font-weight:600;}
+table.fin .ebit-row td{color:var(--green);font-weight:700;font-size:13px;}
+table.fin .bold-row td{font-weight:600;}
+table.fin .sec-tr td{background:var(--bg);font-size:10px;font-weight:600;letter-spacing:0.06em;text-transform:uppercase;color:var(--text2);padding:5px 10px;}
+table.fin .nrc-precio td{background:#fff8e8;color:var(--amber);font-weight:700;font-size:13px;}
+table.fin .usd-precio td{background:var(--green-light);color:var(--green);font-weight:700;}
+table.fin .usd-costos td{color:var(--red);font-weight:600;}
+table.fin .usd-ebit td{color:var(--green);font-weight:700;}
+.section-title{font-size:10px;font-weight:600;letter-spacing:0.08em;text-transform:uppercase;color:var(--text3);padding:8px 0 6px;border-bottom:1px solid var(--border);margin-bottom:0;margin-top:16px;}
+.section-title.green{color:var(--green);}
+.empty-state{display:flex;flex-direction:column;align-items:center;justify-content:center;height:300px;color:var(--text3);text-align:center;gap:10px;}
+.empty-state .icon{font-size:36px;opacity:0.3;}
+.empty-state p{font-size:13px;max-width:260px;line-height:1.6;}
+@media(max-width:800px){.layout{grid-template-columns:1fr;}.sidebar{border-right:none;border-bottom:1px solid var(--border);}}
+</style>
+</head>
+<body>
+<header>
+  <h1>Calculadora UC — Cloud T</h1>
+  <span>Servicios Digitales · v2.0</span>
+</header>
+<div class="layout">
+  <div class="sidebar">
+    <div class="block">
+      <div class="block-title">Parámetros generales</div>
+      <div class="config-grid">
+        <div class="field"><label>TRM (USD → COP)</label><input type="number" id="trm" value="3800" min="1000" max="12000" step="50" onchange="recalc()"></div>
+        <div class="field"><label>Descuento adicional (%)</label><input type="number" id="desc" value="0" min="0" max="40" step="0.5" onchange="recalc()"></div>
+        <div class="field"><label>Vigencia</label><select id="vig" onchange="recalc()"><option value="12">1 año</option><option value="24">2 años</option><option value="36">3 años</option></select></div>
+        <div class="field"><label>MRC objetivo (opcional)</label><input type="number" class="obj" id="mrc_obj" placeholder="Ej: 2000000" min="0" onchange="recalc()"></div>
+        <div class="field"><label>NRC objetivo (opcional)</label><input type="number" class="obj" id="nrc_obj" placeholder="Ej: 1500000" min="0" onchange="recalc()"></div>
+      </div>
+    </div>
+    <div class="block">
+      <div class="block-title">Portafolio — selección múltiple</div>
+      <div class="product-grid" id="pgrid"><div class="product-card" onclick="tog(&#39;chat&#39;)"><div class="prod-name">Chat Center</div><div class="prod-tag">Cloud T · COP/agente/mes</div><div class="prod-badges"><span class="badge badge-green">Setup incluido</span></div></div><div class="product-card" onclick="tog(&#39;omni&#39;)"><div class="prod-name">Omnicanalidad</div><div class="prod-tag">Cloud T · COP/agente/mes</div><div class="prod-badges"><span class="badge badge-green">Setup incluido</span></div></div><div class="product-card" onclick="tog(&#39;wap&#39;)"><div class="prod-name">WhatsApp Entrante</div><div class="prod-tag">Cloud T · USD/canal/mes</div><div class="prod-badges"></div></div><div class="product-card" onclick="tog(&#39;sip_movil&#39;)"><div class="prod-name">Troncal SIP Móvil</div><div class="prod-tag">Cloud T · COP/mes</div><div class="prod-badges"></div></div><div class="product-card" onclick="tog(&#39;sip_fija&#39;)"><div class="prod-name">Troncal SIP Fija</div><div class="prod-tag">Cloud T · COP/mes · por ciudad</div><div class="prod-badges"></div></div><div class="product-card" onclick="tog(&#39;devhora&#39;)"><div class="prod-name">Hora Desarrollo</div><div class="prod-tag">Venta · COP/hora</div><div class="prod-badges"><span class="badge badge-amber">Pago único</span></div></div><div class="product-card" onclick="tog(&#39;wapout_mkt&#39;)"><div class="prod-name">MSG OUT Marketing</div><div class="prod-tag">Venta · USD/msg/mes</div><div class="prod-badges"><span class="badge badge-green">Factura en USD</span></div></div><div class="product-card" onclick="tog(&#39;wapout_auth&#39;)"><div class="prod-name">MSG OUT Auth/Util</div><div class="prod-tag">Venta · USD/msg/mes</div><div class="prod-badges"><span class="badge badge-green">Factura en USD</span></div></div><div class="product-card" onclick="tog(&#39;ia_txt&#39;)"><div class="prod-name">IA Texto (5.000 int.)</div><div class="prod-tag">Venta · USD/paq/mes</div><div class="prod-badges"><span class="badge badge-green">Factura en USD</span></div></div><div class="product-card" onclick="tog(&#39;ia_add&#39;)"><div class="prod-name">IA Texto Paq Adicional</div><div class="prod-tag">Venta · USD/paq/mes</div><div class="prod-badges"><span class="badge badge-green">Factura en USD</span></div></div></div>
+    </div>
+    <div class="block" id="cfg-sec" style="display:none">
+      <div class="block-title">Cantidades y configuración</div>
+      <div id="qty-rows"></div>
+    </div>
+  </div>
+  <div class="main">
+    <div class="empty-state" id="empty"><div class="icon">◈</div><p>Selecciona uno o más productos del portafolio para calcular la tarifa.</p></div>
+    <div id="results" style="display:none"></div>
+  </div>
+</div>
+<script>
+const fmt=v=>isNaN(v)||!isFinite(v)?'-':Math.round(v).toLocaleString('es-CO');
+const fmtP=v=>isNaN(v)||!isFinite(v)?'-':(v*100).toFixed(2)+'%';
+const fmtU=v=>isNaN(v)||!isFinite(v)?'-':v.toLocaleString('en-US',{minimumFractionDigits:2,maximumFractionDigits:4});
+const fmtU2=v=>isNaN(v)||!isFinite(v)?'-':v.toLocaleString('en-US',{minimumFractionDigits:2,maximumFractionDigits:2});
+const CIUDADES={'Barranquilla':{base:50000,didAd:35000,canAd:34000},'Bogotá':{base:30000,didAd:15000,canAd:34000},'Bucaramanga':{base:30000,didAd:15000,canAd:34000},'Cali':{base:30000,didAd:15000,canAd:34000},'Cartagena':{base:48000,didAd:33000,canAd:34000},'Cúcuta':{base:30000,didAd:15000,canAd:34000},'Ibagué':{base:30000,didAd:15000,canAd:34000},'Manizales':{base:30000,didAd:15000,canAd:34000},'Medellín':{base:58000,didAd:43000,canAd:34000},'Neiva':{base:30000,didAd:15000,canAd:34000},'Pasto':{base:30000,didAd:15000,canAd:34000},'Pereira':{base:30000,didAd:15000,canAd:34000},'Santa Marta':{base:30000,didAd:15000,canAd:34000},'Tunja':{base:30000,didAd:15000,canAd:34000},'Soacha/Bogotá':{base:38000,didAd:23000,canAd:34000},'Villavicencio':{base:30000,didAd:15000,canAd:34000}};
+const OMNI_SETUP=[{min:3,max:10,setup:1600000,label:'3-10'},{min:11,max:50,setup:2500000,label:'11-50'},{min:51,max:100,setup:4200000,label:'51-100'},{min:101,max:9999,setup:6300000,label:'101+'}];
+const PRODUCTS=[
+  {id:'chat',name:'Chat Center',tag:'Cloud T · COP/agente/mes',moneda:'COP',type:'cloud',campo:'agentes',setupFijo:800000,rangos:[{min:3,max:5,costo:123000,label:'3-5'},{min:6,max:10,costo:104000,label:'6-10'},{min:11,max:20,costo:90500,label:'11-20'},{min:21,max:30,costo:80500,label:'21-30'},{min:31,max:40,costo:73400,label:'31-40'},{min:41,max:9999,costo:68200,label:'41+'}]},
+  {id:'omni',name:'Omnicanalidad',tag:'Cloud T · COP/agente/mes',moneda:'COP',type:'cloud',campo:'agentes',setupRangos:OMNI_SETUP,rangos:[{min:3,max:10,costo:249000,label:'3-10'},{min:11,max:50,costo:211000,label:'11-50'},{min:51,max:100,costo:187000,label:'51-100'},{min:101,max:9999,costo:165000,label:'101+'}]},
+  {id:'wap',name:'WhatsApp Entrante',tag:'Cloud T · USD/canal/mes',moneda:'USD',type:'cloud',costo:100,campo:'canales'},
+  {id:'sip_movil',name:'Troncal SIP Móvil',tag:'Cloud T · COP/mes',moneda:'COP',type:'cloud',esSIPMovil:true,sesiones:[{min:1,max:9,costo:34000,label:'1-9'},{min:10,max:29,costo:32000,label:'10-29'},{min:30,max:9999,costo:30000,label:'30+'}]},
+  {id:'sip_fija',name:'Troncal SIP Fija',tag:'Cloud T · COP/mes · por ciudad',moneda:'COP',type:'cloud',esSIPFija:true},
+  {id:'devhora',name:'Hora Desarrollo',tag:'Venta · COP/hora',moneda:'COP',type:'venta_unica',costo:215000,campo:'horas'},
+  {id:'wapout_mkt',name:'MSG OUT Marketing',tag:'Venta · USD/msg/mes',moneda:'USD',type:'venta_usd',costo:0.0237,campo:'msgs/mes'},
+  {id:'wapout_auth',name:'MSG OUT Auth/Util',tag:'Venta · USD/msg/mes',moneda:'USD',type:'venta_usd',costo:0.012,campo:'msgs/mes'},
+  {id:'ia_txt',name:'IA Texto (5.000 int.)',tag:'Venta · USD/paq/mes',moneda:'USD',type:'venta_usd',costo:50,campo:'paq/mes'},
+  {id:'ia_add',name:'IA Texto Paq Adicional',tag:'Venta · USD/paq/mes',moneda:'USD',type:'venta_usd',costo:10,campo:'paq/mes'},
+];
+const sel=new Set(),st={};
+PRODUCTS.forEach(p=>{st[p.id]=0;});
+st.sip_movil_dids=0;st.sip_movil_ses=0;st.sip_movil_min=0;
+st.sip_fija_ciudad='Bogotá';st.sip_fija_dids=0;st.sip_fija_can=0;st.sip_fija_min=0;
+const gR=(rangos,qty)=>rangos.find(r=>qty>=r.min&&qty<=r.max)||rangos[rangos.length-1];
+const costoM=()=>{const d=st.sip_movil_dids,s=st.sip_movil_ses,m=st.sip_movil_min;let c=49000+d*15000;if(s>0){const r=gR(PRODUCTS.find(p=>p.id==='sip_movil').sesiones,s);c+=r.costo*s;}return c+m*50;};
+const costoF=()=>{const c=CIUDADES[st.sip_fija_ciudad]||CIUDADES['Bogotá'];return c.base+st.sip_fija_dids*c.didAd+st.sip_fija_can*c.canAd+st.sip_fija_min*50;};
+const pCOP=(c,d)=>c*1.015/(1-0.25198)/(1-0.16)*(1-d/100);
+const pUSD=(c,d)=>c*1.015/(1-0.25198)/(1-0.16)*(1-d/100);
+const fin=(cb,pr)=>{const ci=cb*1.015,cp=pr>0?ci/pr:0,ub=1-cp,mc=ub-0.01198-0.045,ebit=mc-0.01365-0.035;return{ci,cp,ub,mc,ebit};};
+function updSub(){
+  const eM=document.getElementById('sub_sip_movil');
+  if(eM){const d=st.sip_movil_dids,s=st.sip_movil_ses,m=st.sip_movil_min;let p=['Base $49.000 (1 DID + 3 ses.)'];if(d>0)p.push(d+' DID ad. × $15.000');if(s>0){const r=gR(PRODUCTS.find(x=>x.id==='sip_movil').sesiones,s);p.push(s+' ses. × $'+fmt(r.costo)+' ['+r.label+']');}if(m>0)p.push(fmt(m)+' min × $50');eM.textContent=p.join(' + ')+' → $'+fmt(costoM())+'/mes';}
+  const eF=document.getElementById('sub_sip_fija');
+  if(eF){const c=CIUDADES[st.sip_fija_ciudad]||CIUDADES['Bogotá'];const d=st.sip_fija_dids,ca=st.sip_fija_can,m=st.sip_fija_min;let p=['Base $'+fmt(c.base)+' (1 DID + 2 can.)'];if(d>0)p.push(d+' DID ad. × $'+fmt(c.didAd));if(ca>0)p.push(ca+' can. × $'+fmt(c.canAd));if(m>0)p.push(fmt(m)+' min × $50');eF.textContent=p.join(' + ')+' → $'+fmt(costoF())+'/mes';}
+  PRODUCTS.filter(p=>sel.has(p.id)&&p.rangos).forEach(p=>{const el=document.getElementById('sub_'+p.id);if(!el)return;const q=st[p.id],r=gR(p.rangos,q);let t='$'+fmt(r.costo)+' COP/'+p.campo+' · rango '+r.label;if(p.setupFijo)t+=' · setup $'+fmt(p.setupFijo);if(p.setupRangos){const rs=gR(p.setupRangos,q);t+=' · setup $'+fmt(rs.setup)+' ['+rs.label+']';}el.textContent=t;});
+}
+function renderP(){document.getElementById('pgrid').innerHTML=PRODUCTS.map(p=>'<div class="product-card'+(sel.has(p.id)?' selected':'')+'" onclick="tog(\''+p.id+'\')"><div class="prod-name">'+p.name+'</div><div class="prod-tag">'+p.tag+'</div><div class="prod-badges">'+(p.type==='venta_unica'?'<span class="badge badge-amber">Pago único</span>':'')+(p.type==='venta_usd'?'<span class="badge badge-green">Factura en USD</span>':'')+(p.setupFijo||p.setupRangos?'<span class="badge badge-green">Setup incluido</span>':'')+'</div></div>').join('');}
+function tog(id){if(sel.has(id))sel.delete(id);else sel.add(id);renderP();renderQ();recalc();}
+const cOpts=Object.keys(CIUDADES).map(c=>'<option value="'+c+'">'+c+'</option>').join('');
+function renderQ(){
+  const prods=PRODUCTS.filter(p=>sel.has(p.id));const sec=document.getElementById('cfg-sec');
+  if(!prods.length){sec.style.display='none';return;}sec.style.display='block';
+  document.getElementById('qty-rows').innerHTML=prods.map(p=>{
+    if(p.esSIPMovil)return '<div class="qty-block"><div class="qty-row"><div class="qty-lbl">Troncal SIP Móvil<div class="qty-hint" id="sub_sip_movil">Base $49.000 → $'+fmt(costoM())+'/mes</div></div></div><div class="sub-inputs"><div class="sub-row"><label>DIDs adicionales</label><input type="number" value="'+st.sip_movil_dids+'" min="0" onchange="st.sip_movil_dids=parseInt(this.value)||0;updSub();recalc()"></div><div class="sub-row"><label>Sesiones adicionales (sobre 3 base)</label><input type="number" value="'+st.sip_movil_ses+'" min="0" onchange="st.sip_movil_ses=parseInt(this.value)||0;updSub();recalc()"></div><div class="sub-row"><label>Minutos salientes est./mes</label><input type="number" value="'+st.sip_movil_min+'" min="0" onchange="st.sip_movil_min=parseInt(this.value)||0;updSub();recalc()"></div></div></div>';
+    if(p.esSIPFija)return '<div class="qty-block"><div class="qty-row"><div class="qty-lbl">Troncal SIP Fija<div class="qty-hint" id="sub_sip_fija">Base $30.000 → $'+fmt(costoF())+'/mes</div></div></div><div class="sub-inputs"><div class="sub-row"><label>Ciudad</label><select onchange="st.sip_fija_ciudad=this.value;updSub();recalc()">'+cOpts.replace('value="'+st.sip_fija_ciudad+'"','value="'+st.sip_fija_ciudad+'" selected')+'</select></div><div class="sub-row"><label>DIDs adicionales</label><input type="number" value="'+st.sip_fija_dids+'" min="0" onchange="st.sip_fija_dids=parseInt(this.value)||0;updSub();recalc()"></div><div class="sub-row"><label>Canales adicionales (sobre 2 base)</label><input type="number" value="'+st.sip_fija_can+'" min="0" onchange="st.sip_fija_can=parseInt(this.value)||0;updSub();recalc()"></div><div class="sub-row"><label>Minutos salientes est./mes</label><input type="number" value="'+st.sip_fija_min+'" min="0" onchange="st.sip_fija_min=parseInt(this.value)||0;updSub();recalc()"></div></div></div>';
+    if(p.rangos){const q=st[p.id],r=gR(p.rangos,q);let s='$'+fmt(r.costo)+' COP/'+p.campo+' · rango '+r.label;if(p.setupFijo)s+=' · setup $'+fmt(p.setupFijo);if(p.setupRangos){const rs=gR(p.setupRangos,q);s+=' · setup $'+fmt(rs.setup)+' ['+rs.label+']';}return '<div class="qty-block"><div class="qty-row"><div class="qty-lbl">'+p.name+'<div class="qty-hint" id="sub_'+p.id+'">'+s+'</div></div><input type="number" value="'+st[p.id]+'" min="0" onchange="st[\''+p.id+'\']=parseFloat(this.value)||0;updSub();recalc()"></div></div>';}
+    if(p.type==='venta_usd')return '<div class="qty-block"><div class="qty-row"><div class="qty-lbl">'+p.name+'<div class="qty-hint verde">Costo: USD '+p.costo+'/'+p.campo+'</div></div><input type="number" value="'+st[p.id]+'" min="0" onchange="st[\''+p.id+'\']=parseFloat(this.value)||0;recalc()"></div></div>';
+    return '<div class="qty-block"><div class="qty-row"><div class="qty-lbl">'+p.name+'<div class="qty-hint">COP '+fmt(p.costo)+'/'+p.campo+'</div></div><input type="number" value="'+st[p.id]+'" min="0" onchange="st[\''+p.id+'\']=parseFloat(this.value)||0;recalc()"></div></div>';
+  }).join('');
+}
+function mkRows(costB,precio,label,precioCls){
+  const f=fin(costB,precio);
+  return [
+    {sec:label},
+    {l:'Precio público',pct:null,v:precio,cls:precioCls},
+    {l:'Costos (incl. imprevistos 1.5%)',pct:f.cp,v:f.ci,cls:'costos-row'},
+    {l:'Utilidad bruta',pct:f.ub,v:precio-f.ci},
+    {l:'Impuestos CRC+ICA (1.198%)',pct:0.01198,v:precio*0.01198},
+    {l:'Gastos operacionales (4.5%)',pct:0.045,v:precio*0.045},
+    {l:'Margen contribucional',pct:f.mc,v:precio*f.mc,cls:'bold-row'},
+    {l:'Carga prestacional comisión (1.365%)',pct:0.01365,v:precio*0.01365},
+    {l:'Comisión (3.5%)',pct:0.035,v:precio*0.035},
+    {l:'Utilidad EBIT',pct:f.ebit,v:precio*f.ebit,cls:'ebit-row'},
+    {l:'EBIT / Costo',pct:f.cp>0?f.ebit/f.cp:null,v:null},
+  ];
+}
+function recalc(){
+  const trm=parseFloat(document.getElementById('trm').value)||3800;
+  const desc=parseFloat(document.getElementById('desc').value)||0;
+  const vig=parseInt(document.getElementById('vig').value)||12;
+  const moR=parseFloat(document.getElementById('mrc_obj').value);
+  const noR=parseFloat(document.getElementById('nrc_obj').value);
+  const mrcObj=(!isNaN(moR)&&moR>0)?moR:null;
+  const nrcObj=(!isNaN(noR)&&noR>0)?noR:null;
+  const hasObj=!!(mrcObj||nrcObj);
+  const prods=PRODUCTS.filter(p=>sel.has(p.id));
+  const empty=document.getElementById('empty'),res=document.getElementById('results');
+  if(!prods.length){empty.style.display='flex';res.style.display='none';return;}
+  empty.style.display='none';res.style.display='block';
+
+  let cm=0,cu=0,sChat=0,sOmni=0,cusdT=0;const uI=[];
+  prods.forEach(p=>{
+    if(p.type==='venta_usd'){const q=st[p.id],cu2=p.costo*q,pu=pUSD(cu2,desc);if(q>0){uI.push({name:p.name,qty:q,cU:p.costo,pU:pUSD(p.costo,desc),tU:pu});cusdT+=cu2;}return;}
+    let l=0;
+    if(p.esSIPMovil)l=costoM();
+    else if(p.esSIPFija)l=costoF();
+    else if(p.rangos){const q=st[p.id],r=gR(p.rangos,q);l=(p.moneda==='USD'?r.costo*trm:r.costo)*q;if(p.id==='chat'&&p.setupFijo)sChat=p.setupFijo;if(p.id==='omni'&&p.setupRangos)sOmni=gR(p.setupRangos,st[p.id]).setup;}
+    else{const q=st[p.id];l=(p.moneda==='USD'?p.costo*trm:p.costo)*q;}
+    if(p.type==='cloud'||p.type==='venta_recur')cm+=l;else cu+=l;
+  });
+
+  const costoNRC=sChat+sOmni+cu;
+  const mrcC=pCOP(cm,desc),nrcC=costoNRC>0?pCOP(costoNRC,desc):0;
+  const mrcF=mrcObj||mrcC,nrcF=nrcObj||(costoNRC>0?nrcC:0);
+  const fcvC=mrcC*vig+nrcC,fcvO=hasObj?(mrcF*vig+nrcF):null;
+  const tUSD=uI.reduce((s,i)=>s+i.tU,0);
+  const fUSD=cusdT>0?fin(cusdT,tUSD):null;
+  const fMC=fin(cm,mrcC),fNC=costoNRC>0?fin(costoNRC,nrcC):null;
+  const fMO=hasObj?fin(cm,mrcF):null,fNO=hasObj&&costoNRC>0?fin(costoNRC,nrcF):null;
+
+  // Métricas
+  let mH='<div class="metric"><div class="mlabel">NRC calculado</div><div class="mval">$'+fmt(nrcC)+'</div></div><div class="metric"><div class="mlabel">MRC calculado</div><div class="mval">$'+fmt(mrcC)+'</div></div><div class="metric"><div class="mlabel">FCV '+vig/12+' año(s)</div><div class="mval">$'+fmt(fcvC)+'</div></div><div class="metric"><div class="mlabel">EBIT MRC</div><div class="mval">'+fmtP(fMC.ebit)+'</div></div>'+(costoNRC>0?'<div class="metric"><div class="mlabel">EBIT NRC</div><div class="mval">'+fmtP(fNC.ebit)+'</div></div>':'');
+  if(hasObj)mH+='<div class="metric obj"><div class="mlabel">MRC objetivo</div><div class="mval">$'+fmt(mrcF)+'</div></div><div class="metric obj"><div class="mlabel">NRC objetivo</div><div class="mval">$'+fmt(nrcF)+'</div></div><div class="metric obj"><div class="mlabel">FCV con objetivos</div><div class="mval">$'+fmt(fcvO)+'</div></div><div class="metric obj"><div class="mlabel">EBIT MRC objetivo</div><div class="mval">'+fmtP(fMO.ebit)+'</div></div>'+(costoNRC>0?'<div class="metric obj"><div class="mlabel">EBIT NRC objetivo</div><div class="mval">'+fmtP(fNO.ebit)+'</div></div>':'');
+  if(tUSD>0)mH+='<div class="metric usd"><div class="mlabel">Total USD/mes</div><div class="mval">USD '+fmtU2(tUSD)+'</div></div>'+(fUSD?'<div class="metric usd"><div class="mlabel">EBIT USD</div><div class="mval">'+fmtP(fUSD.ebit)+'</div></div>':'');
+
+  // Tabla COP
+  const thead=(hasObj?'<tr><th>Concepto</th><th class="num">%</th><th class="num">COP calc.</th><th class="num obj">% objetivo</th><th class="num obj">COP objetivo</th></tr>':'<tr><th>Concepto</th><th class="num">%</th><th class="num">COP</th></tr>');
+  const rowsMRC=mkRows(cm,mrcC,'Recurrente mensual (MRC)','precio-row');
+  const rowsMRCO=hasObj?mkRows(cm,mrcF,'','precio-row'):[];
+  const rowsNRC=costoNRC>0?mkRows(costoNRC,nrcC,'Pago único (NRC)','nrc-precio'):[];
+  const rowsNRCO=hasObj&&costoNRC>0?mkRows(costoNRC,nrcF,'','nrc-precio'):[];
+  const allC=[...rowsMRC,...rowsNRC];
+  const allO=[...rowsMRCO,...rowsNRCO];
+  const tbody=allC.map((r,i)=>{
+    const o=allO[i];
+    if(r.sec)return '<tr class="sec-tr"><td colspan="'+(hasObj?5:3)+'">'+r.sec+'</td></tr>';
+    return '<tr class="'+(r.cls||'')+'"><td>'+r.l+'</td><td class="num">'+(r.pct!=null?fmtP(r.pct):'-')+'</td><td class="num">'+(r.v!=null?'$'+fmt(r.v):'-')+'</td>'+(hasObj?'<td class="obj-col">'+(o&&o.pct!=null?fmtP(o.pct):'-')+'</td><td class="obj-col">'+(o&&o.v!=null?'$'+fmt(o.v):'-')+'</td>':'')+'</tr>';
+  }).join('');
+
+  // Tabla USD
+  let usdH='';
+  if(uI.length>0&&fUSD){
+    const uRows=uI.map(i=>'<tr><td>'+i.name+'</td><td class="num">'+fmt(i.qty)+'</td><td class="usd-col">USD '+fmtU(i.cU)+'</td><td class="usd-col">USD '+fmtU(i.pU)+'</td><td class="usd-col" style="font-weight:600">USD '+fmtU2(i.tU)+'</td></tr>').join('')+'<tr class="usd-precio"><td colspan="4">Total precio venta USD/mes</td><td class="usd-col">USD '+fmtU2(tUSD)+'</td></tr>';
+    const finUrows=[
+      {l:'Precio venta USD/mes',pct:null,v:tUSD,cls:'usd-precio'},
+      {l:'Costos (incl. imprevistos 1.5%)',pct:fUSD.cp,v:fUSD.ci,cls:'usd-costos'},
+      {l:'Utilidad bruta',pct:fUSD.ub,v:tUSD-fUSD.ci},
+      {l:'Impuestos CRC+ICA (1.198%)',pct:0.01198,v:tUSD*0.01198},
+      {l:'Gastos operacionales (4.5%)',pct:0.045,v:tUSD*0.045},
+      {l:'Margen contribucional',pct:fUSD.mc,v:tUSD*fUSD.mc,cls:'bold-row'},
+      {l:'Carga prestacional (1.365%)',pct:0.01365,v:tUSD*0.01365},
+      {l:'Comisión (3.5%)',pct:0.035,v:tUSD*0.035},
+      {l:'Utilidad EBIT',pct:fUSD.ebit,v:tUSD*fUSD.ebit,cls:'usd-ebit'},
+      {l:'EBIT / Costo',pct:fUSD.cp>0?fUSD.ebit/fUSD.cp:null,v:null},
+    ].map(r=>'<tr class="'+(r.cls||'')+'"><td>'+r.l+'</td><td class="usd-col">'+(r.pct!=null?fmtP(r.pct):'-')+'</td><td class="usd-col">'+(r.v!=null?'USD '+fmtU2(r.v):'-')+'</td></tr>').join('');
+    usdH='<div class="section-title green">Facturación en USD — precio de venta</div><table class="fin"><thead><tr><th>Producto</th><th class="num">Cant.</th><th class="num usdh">Costo unit. USD</th><th class="num usdh">Precio venta USD</th><th class="num usdh">Total USD/mes</th></tr></thead><tbody>'+uRows+'</tbody></table><div class="section-title green">Variables financieras — USD</div><table class="fin"><thead><tr><th>Concepto</th><th class="num usdh">%</th><th class="num usdh">USD/mes</th></tr></thead><tbody>'+finUrows+'</tbody></table>';
+  }
+
+  res.innerHTML='<div class="metrics-grid">'+mH+'</div><div class="section-title">Variables financieras — COP</div><table class="fin"><thead>'+thead+'</thead><tbody>'+tbody+'</tbody></table>'+usdH;
+}
+renderP();
+</script>
+
+
+</body></html>
